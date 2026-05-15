@@ -1,0 +1,565 @@
+# 🌱 ECOMETRIC - Plataforma de Impacto Ambiental Gamificada
+
+Uma plataforma Python que transforma o uso de mobilidade urbana em métricas de CO₂ evitado e recompensas!
+
+## 📚 Índice de Aprendizado
+
+Este projeto foi estruturado para **aprender Python e software architecture** de forma prática e progressiva.
+
+### Pré-requisitos
+- Python 3.8+
+- Conhecimento básico de Python (variáveis, funções)
+- Curiosidade sobre programação! 🎯
+
+---
+
+## 🚀 Começando
+
+### 1. Instalação
+
+```bash
+# Clone ou baixe o projeto
+cd ecometric
+
+# Crie um ambiente virtual (recomendado)
+python -m venv venv
+
+# Ative o ambiente virtual
+# No Windows:
+venv\Scripts\activate
+# No macOS/Linux:
+source venv/bin/activate
+
+# Instale as dependências
+pip install -r requirements.txt
+```
+
+### 2. Primeiro Contato - Exemplo Educacional
+
+**Este é o melhor ponto de partida!** O arquivo `exemplo_educacional.py` mostra cada conceito de forma clara.
+
+```bash
+python exemplo_educacional.py
+```
+
+Você verá:
+- ✅ Como criar um veículo
+- ✅ Como simular eventos
+- ✅ Como calcular CO₂
+- ✅ Como gerar CapCoins
+- ✅ Como resgatar prêmios
+
+**Tempo estimado:** 5 minutos
+
+---
+
+## 📖 Estrutura do Aprendizado
+
+### NÍVEL 1: Modelos de Dados (Fundação)
+**Arquivo:** `src/models.py`
+
+```python
+# O que você vai aprender:
+✅ Classes em Python (O que é? Como criar?)
+✅ Enums (listas de valores pré-definidos)
+✅ Método __init__ (construtor)
+✅ Métodos de instância
+✅ Dicionários e conversões
+```
+
+**Conceitos abordados:**
+- Classe `Veiculo`: Marca, modelo, ano, combustível, emissão
+- Classe `Evento`: Tipo (pedágio/estacionamento), tempo, CO₂
+- Classe `Usuario`: Dados pessoais, veículos, eventos, pontuação
+- Enum `TipoCombustivel` e `CategoriaVeiculo`: Valores pré-definidos
+
+**Exemplo prático:**
+```python
+from src.models import Veiculo, TipoCombustivel, CategoriaVeiculo
+
+# Criar um veículo
+meu_carro = Veiculo(
+    brand="Jeep",
+    model="Compass",
+    year=2022,
+    fuel_type=TipoCombustivel.GASOLINA,
+    category=CategoriaVeiculo.SUV,
+    co2_per_minute=28
+)
+
+# Acessar propriedades
+print(meu_carro.brand)  # "Jeep"
+print(meu_carro.descricao())  # "Jeep Compass (2022) - SUV..."
+```
+
+---
+
+### NÍVEL 2: Engine de Emissões (Lógica de Cálculo)
+**Arquivo:** `src/emission_engine.py`
+
+```python
+# O que você vai aprender:
+✅ Validação de dados
+✅ Cálculos matemáticos
+✅ Conversão de unidades
+✅ Agregação de dados
+✅ Geração de relatórios
+```
+
+**Conceitos abordados:**
+- **Fórmula principal:** CO₂ evitado = Tempo economizado × Emissão
+- **Conversões:** g ↔ kg, minutos ↔ horas
+- **Equivalências:** CO₂ em árvores plantadas, km economizados
+- **Validação:** Garantir que dados sejam válidos
+
+**Exemplo prático:**
+```python
+from src.emission_engine import EmissionEngine
+from src.models import Evento, TipoEvento
+
+motor = EmissionEngine()
+
+# Simular um evento
+evento = Evento(tipo=TipoEvento.PEDAGIO, tempo_economizado_min=4.5)
+
+# Calcular CO₂
+co2_evitado = motor.calcular_co2_evitado(evento, meu_carro)
+print(f"CO₂ evitado: {co2_evitado}g")  # 126.0g
+
+# Converter para kg
+co2_kg = motor.converter_g_para_kg(co2_evitado)
+print(f"Em quilogramas: {co2_kg}kg")  # 0.126kg
+
+# Equivalente em árvores
+arvores = motor.equivalente_arvores_plantadas(co2_evitado)
+print(f"Árvores: {arvores}")  # ~0.006 árvores/ano
+```
+
+---
+
+### NÍVEL 3: Engine de Gamificação (CapCoins)
+**Arquivo:** `src/gamification_engine.py`
+
+```python
+# O que você vai aprender:
+✅ Sistema de pontos/moeda virtual
+✅ Cálculo de bônus (streak, engajamento)
+✅ Gerenciamento de saldo
+✅ Validação anti-fraude
+✅ Processamento de resgates
+```
+
+**Conceitos abordados:**
+- **Base:** Cada evento gera CapCoins (5 para pedágio, 3 para estacionamento)
+- **Bônus Streak:** Quanto mais dias consecutivos, maior o bônus (até 80)
+- **Bônus Engajamento:** Quanto mais eventos, maior o bônus (até 50)
+- **Anti-fraude:** Validar eventos para evitar repetições muito próximas
+- **Resgate:** Converter CapCoins em prêmios reais
+
+**Exemplo prático:**
+```python
+from src.gamification_engine import GamificationEngine
+from src.models import TipoResgate
+
+game = GamificationEngine()
+
+# Calcular CapCoins de um evento
+capcoin = game.calcular_capcoin(evento)
+print(f"CapCoins: +{capcoin}")  # +5 para pedágio
+
+# Adicionar ao saldo do usuário
+game.adicionar_capcoin(usuario, 5, "Pedágio")
+
+# Calcular bônus de streak
+bonus = game.calcular_bonus_streak(usuario, dias_consecutivos=7)
+print(f"Bônus: +{bonus}")  # ~10-20 CapCoins
+
+# Resgatar um prêmio
+sucesso = game.resgatar_premio(usuario, TipoResgate.ARVORE_PLANTADA)
+if sucesso:
+    print("🎁 Uma árvore foi plantada!")
+```
+
+---
+
+### NÍVEL 4: Simulador (Integração Completa)
+**Arquivo:** `src/simulator.py`
+
+```python
+# O que você vai aprender:
+✅ Integração de múltiplos módulos
+✅ Simulação realista de eventos
+✅ Geração de relatórios completos
+✅ Análise de dados agregados
+```
+
+**Conceitos abordados:**
+- Criar usuários e veículos de forma organizada
+- Simular múltiplos eventos com distribuição temporal
+- Aplicar bônus automaticamente
+- Processar resgates
+- Gerar relatórios detalhados
+
+**Exemplo prático:**
+```python
+from src.simulator import Simulador
+
+sim = Simulador()
+
+# Criar usuário
+usuario = sim.criar_usuario("001", "João Silva")
+
+# Adicionar veículo
+veiculo = sim.adicionar_veiculo(
+    usuario,
+    "Jeep", "Compass", 2022,
+    TipoCombustivel.GASOLINA,
+    CategoriaVeiculo.SUV,
+    co2_per_minute=28
+)
+
+# Simular 20 eventos do mês
+eventos = sim.simular_eventos_mensais(usuario, veiculo, 20)
+
+# Ver relatório
+sim.relatorio_usuario(usuario)
+```
+
+---
+
+## 🎮 Executando os Exemplos
+
+### Exemplo 1: Educacional (Recomendado!)
+Mostra cada conceito passo a passo.
+
+```bash
+python exemplo_educacional.py
+```
+
+**Output esperado:**
+```
+╔════════════════════════════════════════════════════════════╗
+║ PARTE 1: ENTENDENDO CLASSES                               ║
+╚════════════════════════════════════════════════════════════╝
+
+📌 Uma classe é como um molde que define a estrutura de um objeto.
+...
+```
+
+**Duração:** ~5 min | **Dificuldade:** Fácil | **Aprendizado:** Alto
+
+---
+
+### Exemplo 2: Simulação Completa
+Mostra o sistema em ação com múltiplos usuários.
+
+```bash
+python main.py
+```
+
+**Output esperado:**
+```
+🌱 BEM-VINDO AO ECOMETRIC
+Transformando mobilidade urbana em impacto ambiental
+
+📌 PASSO 1: Inicializando o sistema...
+✅ Engine de Emissões iniciado
+✅ Engine de Gamificação iniciado
+✅ Simulador inicializado
+
+📌 PASSO 2: Criando usuários...
+✅ Usuário criado: João Silva
+✅ Usuário criado: Maria Santos
+✅ Usuário criado: Pedro Costa
+
+...
+
+📊 RELATÓRIO GERAL - TODOS OS USUÁRIOS
+============================================================
+Nome                 Eventos    CO₂ (kg)    CapCoins    Prêmios
+...
+```
+
+**Duração:** ~1-2 min | **Dificuldade:** Médio | **Aprendizado:** Muito Alto
+
+---
+
+## 🏗️ Arquitetura do Código
+
+```
+ecometric/
+│
+├── src/
+│   ├── __init__.py                 # Inicialização do pacote
+│   ├── config.py                   # ⚙️ Configurações (constantes, ambiente)
+│   ├── models.py                   # 🏗️ Estrutura de dados (classes)
+│   ├── emission_engine.py          # 🌍 Cálculo de CO₂
+│   ├── gamification_engine.py      # 🪙 Sistema de CapCoins
+│   ├── simulator.py                # 🎮 Simulação de eventos
+│   └── database.py                 # 💾 MongoDB (futuro)
+│
+├── main.py                         # 🚀 Ponto de entrada principal
+├── exemplo_educacional.py          # 📚 Guia educacional
+├── .env                            # 🔐 Variáveis de ambiente
+├── requirements.txt                # 📦 Dependências
+└── README.md                       # 📖 Este arquivo
+```
+
+**Fluxo de dados:**
+
+```
+Usuário
+  ↓
+Veículo → Evento (Pedágio/Estacionamento)
+  ↓
+EmissionEngine → CO₂ evitado (g)
+  ↓
+GamificationEngine → CapCoins gerados
+  ↓
+Usuario (atualiza saldo)
+  ↓
+Relatório / Resgate de prêmios
+```
+
+---
+
+## 💡 Conceitos Python Explicados
+
+### Classes e Objetos
+```python
+# Uma classe é um molde
+class Veiculo:
+    def __init__(self, brand, model):
+        self.brand = brand  # Propriedade
+        self.model = model
+    
+    def descricao(self):  # Método
+        return f"{self.brand} {self.model}"
+
+# Uma instância é um objeto específico criado a partir da classe
+meu_carro = Veiculo("Jeep", "Compass")
+# Agora meu_carro é um objeto Veiculo
+```
+
+### Enums (Enumerações)
+```python
+from enum import Enum
+
+# Enum: lista pré-definida de valores válidos
+class TipoEvento(Enum):
+    PEDAGIO = "Pedágio"
+    ESTACIONAMENTO = "Estacionamento"
+
+# Usar:
+evento = Evento(tipo=TipoEvento.PEDAGIO)
+# Não pode fazer: TipoEvento.OUTRO (erro!)
+```
+
+### Type Hints (Dicas de Tipo)
+```python
+# Deixa claro qual tipo de dado cada variável deve ter
+def calcular_co2_evitado(
+    evento: Evento,          # evento deve ser do tipo Evento
+    veiculo: Veiculo         # veiculo deve ser do tipo Veiculo
+) -> float:                  # retorna um float
+    return evento.tempo * veiculo.emissao
+```
+
+### Dicionários
+```python
+# Dicionário: chave → valor
+relatorio = {
+    "usuario": "João",
+    "co2_total": 500,
+    "capcoin": 100
+}
+
+# Acessar:
+print(relatorio["usuario"])  # "João"
+
+# Iterar:
+for chave, valor in relatorio.items():
+    print(f"{chave}: {valor}")
+```
+
+---
+
+## 🔄 Fluxo de Aprendizado Recomendado
+
+### Semana 1: Fundamentos
+- [ ] Ler `src/models.py` completamente
+- [ ] Rodar `exemplo_educacional.py`
+- [ ] Modificar valores e ver o que muda
+- [ ] Criar um novo veículo com suas próprias propriedades
+
+### Semana 2: Lógica de Negócio
+- [ ] Ler `src/emission_engine.py`
+- [ ] Entender a fórmula de CO₂
+- [ ] Testar conversões de unidades
+- [ ] Criar seus próprios eventos
+
+### Semana 3: Gamificação
+- [ ] Ler `src/gamification_engine.py`
+- [ ] Entender bônus e resgates
+- [ ] Modificar as regras de CapCoins
+- [ ] Adicionar novos tipos de bônus
+
+### Semana 4: Integração
+- [ ] Ler `src/simulator.py`
+- [ ] Rodar `main.py`
+- [ ] Analisar os relatórios
+- [ ] Criar simulações personalizadas
+
+### Semana 5: Extensão
+- [ ] Adicionar MongoDB (`src/database.py`)
+- [ ] Criar uma API REST simples
+- [ ] Desenvolver um Dashboard básico
+- [ ] Integrar com dados reais (API Taggy)
+
+---
+
+## 🎯 Desafios de Aprendizado
+
+### Desafio 1: Criar um novo tipo de evento
+Adicione um novo tipo chamado `VIAGEM_LONGA` que funcione de forma diferente.
+
+```python
+# src/models.py
+class TipoEvento(Enum):
+    PEDAGIO = "Pedágio"
+    ESTACIONAMENTO = "Estacionamento"
+    VIAGEM_LONGA = "Viagem Longa"  # ← Novo!
+
+# src/gamification_engine.py
+def calcular_capcoin(self, evento: Evento) -> int:
+    if evento.tipo == TipoEvento.VIAGEM_LONGA:
+        return 15  # Mais CapCoins para viagens longas!
+    # ...
+```
+
+### Desafio 2: Modificar a fórmula de CO₂
+Adicione um fator de "eficiência energética" ao cálculo.
+
+```python
+# Em vez de: CO₂ = Tempo × Emissão
+# Fazer: CO₂ = Tempo × Emissão × (1 - eficiência)
+```
+
+### Desafio 3: Adicionar novos bônus
+Crie um "bônus social" quando amigos usam a Taggy.
+
+```python
+def calcular_bonus_social(self, usuario: Usuario) -> int:
+    # Quantos amigos também usam?
+    amigos_ativos = contar_amigos_ativos(usuario)
+    return amigos_ativos * 10
+```
+
+### Desafio 4: Integrar com MongoDB
+Salve usuários, eventos e resgates em um banco de dados real.
+
+---
+
+## 📊 Métricas e KPIs
+
+O sistema rastreia automaticamente:
+
+```
+✅ CO₂ total evitado (kg/mês)
+✅ Usuários ativos
+✅ Tempo até primeiro resgate
+✅ CapCoins emitidos vs resgatados
+✅ Engajamento no app
+✅ Número de árvores plantadas (equivalente)
+```
+
+---
+
+## 🔮 Próximos Passos (Futuro)
+
+### Fase 2: Persistência
+```bash
+# Implementar MongoDB
+# Criar migration scripts
+# Adicionar índices de performance
+```
+
+### Fase 3: API REST
+```bash
+# FastAPI ou Flask
+# Endpoints para usuários, eventos, resgates
+# Autenticação com JWT
+# Rate limiting
+```
+
+### Fase 4: Frontend
+```bash
+# Dashboard em React ou Vue
+# Gráficos de CO₂ em tempo real
+# Ranking de usuários
+# Notificações de prêmios
+```
+
+### Fase 5: Integração Real
+```bash
+# Conectar com API Taggy
+# Dados reais de pedágio
+# Sincronização automática
+# Sistema de rewards parceiros
+```
+
+---
+
+## ❓ FAQ
+
+**P: Por que começar com exemplo_educacional.py?**
+R: Porque mostra cada conceito de forma isolada e clara. Você entende antes de ver a complexidade total.
+
+**P: Quanto de conhecimento de Python é necessário?**
+R: O mínimo: variáveis, funções, listas, dicionários. Tudo mais é ensinado pelo código comentado.
+
+**P: Posso modificar o código?**
+R: SIM! Essa é a melhor forma de aprender. Mude valores, adicione novas regras, experimente!
+
+**P: Como integrar com dados reais da Taggy?**
+R: No `src/simulator.py`, substitua `simular_evento_aleatorio()` por uma chamada à API Taggy.
+
+**P: Quando devo adicionar MongoDB?**
+R: Após entender bem a lógica em memória. Depois você cria `src/database.py`.
+
+---
+
+## 📞 Suporte
+
+Dúvidas sobre cada módulo?
+
+- **models.py**: Como estão organizados os dados?
+- **emission_engine.py**: Como calcular CO₂?
+- **gamification_engine.py**: Como gerar CapCoins?
+- **simulator.py**: Como simular eventos?
+- **main.py**: Como rodar tudo junto?
+
+Leia os comentários no código - estão muito detalhados! 📖
+
+---
+
+## 🎓 Conclusão
+
+Parabéns! 🎉 Você aprendeu:
+
+✅ Python orientado a objetos (Classes, Enums, Type hints)
+✅ Lógica de negócio (Cálculos, validações, relatórios)
+✅ Gamificação (Pontos, bônus, resgates)
+✅ Simulação (Distribuição temporal, aleatoriedade)
+✅ Arquitetura de software (Separação de responsabilidades)
+
+**Próximo passo:** Implemente a integração com MongoDB e crie uma API REST.
+
+Boa sorte! 🚀🌱
+
+---
+
+**Versão:** 0.1.0 (MVP)
+**Última atualização:** Maio 2024
+**Autor:** Você
+**Licença:** MIT
